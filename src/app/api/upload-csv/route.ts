@@ -49,33 +49,44 @@ async function uploadCSVToS3(filePath: string) {
 export async function POST(request: NextRequest) {
   const formData = await request.formData(); // Get the form data
 
-  // Ensure to check the correct file input name from your form
-  const file = formData.get("file"); // Change 'file' to your input name
+  // Handle multiple files
+  const files = formData.getAll("files"); // Get all files from the input (note 'files' should match the input field's name)
 
-  if (!file || !(file instanceof File)) {
-    return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
+  if (!files || files.length === 0) {
+    return NextResponse.json({ error: "No files uploaded" }, { status: 400 });
   }
 
-  const buffer = await file.arrayBuffer(); // Get the file as an ArrayBuffer
-  const filePath = path.join(process.cwd(), file.name); // Create a temp file path
+  const uploadedFiles = [];
 
-  // Write the file to the temp path
-  fs.writeFileSync(filePath, Buffer.from(buffer));
+  for (const file of files) {
+    if (!(file instanceof File)) {
+      continue; // Skip if it's not a valid file
+    }
 
-  const s3UploadResult = await uploadCSVToS3(filePath);
+    const buffer = await file.arrayBuffer(); // Get the file as an ArrayBuffer
+    const filePath = path.join(process.cwd(), file.name); // Create a temp file path
 
-  // Cleanup: Delete the temporary file after upload
-  fs.unlinkSync(filePath);
+    // Write the file to the temp path
+    fs.writeFileSync(filePath, Buffer.from(buffer));
 
-  if (s3UploadResult.success) {
-    return NextResponse.json({
-      message: "File uploaded successfully!",
-      url: s3UploadResult.location,
-    });
-  } else {
-    return NextResponse.json(
-      { error: "Failed to upload file to S3" },
-      { status: 500 }
-    );
+    // Upload the file to S3
+    const s3UploadResult = await uploadCSVToS3(filePath);
+
+    // Cleanup: Delete the temporary file after upload
+    fs.unlinkSync(filePath);
+
+    if (s3UploadResult.success) {
+      uploadedFiles.push(s3UploadResult.location); // Collect the uploaded file URLs
+    } else {
+      return NextResponse.json(
+        { error: `Failed to upload file: ${file.name}` },
+        { status: 500 }
+      );
+    }
   }
+
+  return NextResponse.json({
+    message: "Files uploaded successfully!",
+    urls: uploadedFiles, // Return all uploaded file URLs
+  });
 }
