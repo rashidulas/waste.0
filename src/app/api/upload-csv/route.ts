@@ -23,11 +23,13 @@ const s3 = new S3Client({
 });
 
 // Function to upload CSV to S3
-async function uploadCSVToS3(filePath: string) {
+async function uploadCSVToS3(filePath: string, userId: string) {
   const fileContent = fs.readFileSync(filePath);
+
+  // Create dynamic folder using userId
   const params = {
     Bucket: process.env.AWS_BUCKET_NAME!,
-    Key: `uploads/${path.basename(filePath)}`,
+    Key: `uploads/${userId}/${path.basename(filePath)}`, // Create folder structure with userId
     Body: fileContent,
   };
 
@@ -38,7 +40,7 @@ async function uploadCSVToS3(filePath: string) {
       success: true,
       location: `https://${process.env.AWS_BUCKET_NAME}.s3.${
         process.env.AWS_REGION
-      }.amazonaws.com/uploads/${path.basename(filePath)}`,
+      }.amazonaws.com/uploads/${userId}/${path.basename(filePath)}`,
     };
   } catch (error) {
     console.error("Error uploading CSV to S3:", error);
@@ -48,6 +50,16 @@ async function uploadCSVToS3(filePath: string) {
 
 export async function POST(request: NextRequest) {
   const formData = await request.formData(); // Get the form data
+
+  // Assuming userId is passed from the client (or fetched from session/auth)
+  const userId = formData.get("userId") as string; // Retrieve userId from the form data
+
+  if (!userId) {
+    return NextResponse.json(
+      { error: "User ID not provided" },
+      { status: 400 }
+    );
+  }
 
   // Handle multiple files
   const files = formData.getAll("files"); // Get all files from the input (note 'files' should match the input field's name)
@@ -69,8 +81,8 @@ export async function POST(request: NextRequest) {
     // Write the file to the temp path
     fs.writeFileSync(filePath, Buffer.from(buffer));
 
-    // Upload the file to S3
-    const s3UploadResult = await uploadCSVToS3(filePath);
+    // Upload the file to S3, using userId to create a dynamic folder
+    const s3UploadResult = await uploadCSVToS3(filePath, userId);
 
     // Cleanup: Delete the temporary file after upload
     fs.unlinkSync(filePath);

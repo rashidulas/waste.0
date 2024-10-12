@@ -1,7 +1,10 @@
 "use client";
+
 import { useState } from "react";
+import { useUser } from "@clerk/nextjs"; // Import Clerk's useUser hook
 
 export default function CSVUploadForm() {
+  const { user } = useUser(); // Get the current authenticated user
   const [files, setFiles] = useState<File[]>([]); // Store multiple files
   const [uploadStatus, setUploadStatus] = useState<string>("");
 
@@ -14,6 +17,11 @@ export default function CSVUploadForm() {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
+    if (!user?.id) {
+      setUploadStatus("User not authenticated.");
+      return;
+    }
+
     if (files.length === 0) {
       setUploadStatus("Please select at least one file.");
       return;
@@ -23,6 +31,9 @@ export default function CSVUploadForm() {
     files.forEach((file) => {
       formData.append("files", file); // Append each file to FormData
     });
+
+    // Append the user ID from Clerk to the form data
+    formData.append("userId", user.id);
 
     try {
       setUploadStatus("Uploading...");
