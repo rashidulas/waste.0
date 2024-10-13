@@ -54,7 +54,7 @@ async function triggerDatabricksJob(fileName: string) {
       url,
       {
         job_id: jobId,
-        notebook_params: { file_name: fileName }, // Pass any parameters your notebook expects
+        notebook_params: { file_name: fileName },
       },
       {
         headers: {
