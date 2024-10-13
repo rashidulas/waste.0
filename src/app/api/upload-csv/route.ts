@@ -2,23 +2,20 @@ import { NextRequest, NextResponse } from "next/server";
 import fs from "fs";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import path from "path";
+import axios from "axios"; // Add axios for HTTP requests
 
 export const config = {
   api: {
-    bodyParser: false, // Disable default body parsing for file upload
+    bodyParser: false,
   },
 };
 
-const region = process.env.AWS_REGION!;
-const accessKeyId = process.env.AWS_ACCESS_KEY_ID!;
-const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY!;
-
-// Configure AWS S3 client
+// AWS S3 configuration
 const s3 = new S3Client({
-  region: region,
+  region: process.env.AWS_REGION!,
   credentials: {
-    accessKeyId: accessKeyId,
-    secretAccessKey: secretAccessKey,
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
   },
 });
 
@@ -26,10 +23,9 @@ const s3 = new S3Client({
 async function uploadCSVToS3(filePath: string, userId: string) {
   const fileContent = fs.readFileSync(filePath);
 
-  // Create dynamic folder using userId
   const params = {
     Bucket: process.env.AWS_BUCKET_NAME!,
-    Key: `uploads/${userId}/${path.basename(filePath)}`, // Create folder structure with userId
+    Key: `uploads/${userId}/${path.basename(filePath)}`,
     Body: fileContent,
   };
 
@@ -48,11 +44,36 @@ async function uploadCSVToS3(filePath: string, userId: string) {
   }
 }
 
-export async function POST(request: NextRequest) {
-  const formData = await request.formData(); // Get the form data
+// Function to trigger Databricks job
+async function triggerDatabricksJob(fileName: string) {
+  const url = `https://dbc-f53a120f-3946.cloud.databricks.com/api/2.0/jobs/run-now`;
+  const jobId = "17018373764833";
 
-  // Assuming userId is passed from the client (or fetched from session/auth)
-  const userId = formData.get("userId") as string; // Retrieve userId from the form data
+  try {
+    const response = await axios.post(
+      url,
+      {
+        job_id: jobId,
+        notebook_params: { file_name: fileName }, // Pass any parameters your notebook expects
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.DATABRICKS_TOKEN}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error("Error triggering Databricks job:", error);
+    throw new Error("Failed to trigger Databricks job.");
+  }
+}
+
+export async function POST(request: NextRequest) {
+  const formData = await request.formData();
+  const userId = formData.get("userId") as string;
 
   if (!userId) {
     return NextResponse.json(
@@ -61,8 +82,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Handle multiple files
-  const files = formData.getAll("files"); // Get all files from the input (note 'files' should match the input field's name)
+  const files = formData.getAll("files");
 
   if (!files || files.length === 0) {
     return NextResponse.json({ error: "No files uploaded" }, { status: 400 });
@@ -72,23 +92,19 @@ export async function POST(request: NextRequest) {
 
   for (const file of files) {
     if (!(file instanceof File)) {
-      continue; // Skip if it's not a valid file
+      continue;
     }
 
-    const buffer = await file.arrayBuffer(); // Get the file as an ArrayBuffer
-    const filePath = path.join(process.cwd(), file.name); // Create a temp file path
-
-    // Write the file to the temp path
+    const buffer = await file.arrayBuffer();
+    const filePath = path.join(process.cwd(), file.name);
     fs.writeFileSync(filePath, Buffer.from(buffer));
-
-    // Upload the file to S3, using userId to create a dynamic folder
     const s3UploadResult = await uploadCSVToS3(filePath, userId);
-
-    // Cleanup: Delete the temporary file after upload
     fs.unlinkSync(filePath);
 
     if (s3UploadResult.success) {
-      uploadedFiles.push(s3UploadResult.location); // Collect the uploaded file URLs
+      uploadedFiles.push(s3UploadResult.location);
+      // Trigger Databricks job after successful upload
+      await triggerDatabricksJob(file.name);
     } else {
       return NextResponse.json(
         { error: `Failed to upload file: ${file.name}` },
@@ -99,6 +115,6 @@ export async function POST(request: NextRequest) {
 
   return NextResponse.json({
     message: "Files uploaded successfully!",
-    urls: uploadedFiles, // Return all uploaded file URLs
+    urls: uploadedFiles,
   });
 }
