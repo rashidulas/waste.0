@@ -6,6 +6,7 @@ import Charity from "@/lib/models/charity.model";
 import Image from "next/image";
 import { BarChartComponent } from "@/components/charts/BarChart";
 import SurplusComponent from "@/components/dashboard/surplus"; // Add this line
+import PredictionsTable from "@/components/dashboard/PredictionsTable";
 
 // Fetch user data and determine if the user is a charity
 
@@ -43,7 +44,7 @@ async function StreamlitAppWithSidebar() {
   return (
     <div className="flex h-screen w-full">
       {/* Left Half: Sidebar and User/Business Info */}
-      <div className="w-1/2 bg-gray-800 text-white p-6 overflow-y-auto">
+      <div className="w-1/5 bg-gray-800 text-white p-6 overflow-y-auto">
         <h3 className="text-xl font-bold mb-4 border-b border-gray-700 pb-2">
           User Information
         </h3>
@@ -97,7 +98,7 @@ async function StreamlitAppWithSidebar() {
       </div>
 
       {/* Right Half: Streamlit App */}
-      <div className="w-1/2">
+      <div className="w-5/6">
         {/* <iframe
           src="http://localhost:8501" // Replace with your Streamlit app URL
           className="w-full h-full border-none"
@@ -106,6 +107,9 @@ async function StreamlitAppWithSidebar() {
 
         <div>
           <SurplusComponent />
+        </div>
+        <div>
+          <PredictionsTable />
         </div>
       </div>
     </div>
