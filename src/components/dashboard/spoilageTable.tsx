@@ -7,15 +7,17 @@ import {
   TableHead,
   TableCell,
 } from "@/components/ui/table"; // Adjust the import according to your directory structure
-import { fetchPredictions } from "@/lib/actions/predictions.actions"; // Adjust the import according to your directory structure
+import { fetchSpoilage } from "@/lib/actions/predictions.actions"; // Adjust the import according to your directory structure
 import { currentUser } from "@clerk/nextjs/server";
 
-// Define a type for the optimal order
-type OptimalOrder = {
-  [key: string]: number; // Category name as key and amount as value
+// Define a type for the spoilage data
+type SpoilageData = {
+  item: string; // Item name
+  amount: number; // Spoilage amount
+  date: string; // Date of spoilage
 };
 
-const PredictionsTable = async () => {
+const SpoilageTable = async () => {
   const user = await currentUser(); // Get the current user's ID from Clerk
   const userId = user?.id;
 
@@ -26,17 +28,8 @@ const PredictionsTable = async () => {
   }
 
   try {
-    // Fetch predictions data
-    const predictionData = await fetchPredictions(userId);
-    const optimalOrder: OptimalOrder | undefined = predictionData?.optimalOrder;
-
-    // Convert the optimal order object into an array of entries for easy mapping
-    const dataEntries = optimalOrder
-      ? Object.entries(optimalOrder).map(([category, amount]) => ({
-          category,
-          amount,
-        }))
-      : [];
+    // Fetch spoilage data
+    const spoilageEntries: SpoilageData[] = await fetchSpoilage(userId);
 
     return (
       <div className="rounded-lg overflow-hidden shadow-md bg-white">
@@ -44,25 +37,29 @@ const PredictionsTable = async () => {
           <TableHeader>
             <TableRow>
               <TableHead className="bg-gray-100" style={{ color: "#f87315" }}>
-                Category
+                Item
               </TableHead>
               <TableHead className="bg-gray-100" style={{ color: "#f87315" }}>
                 Amount
               </TableHead>
+              <TableHead className="bg-gray-100" style={{ color: "#f87315" }}>
+                Expiry Date
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {dataEntries.length > 0 ? (
-              dataEntries.map(({ category, amount }) => (
-                <TableRow key={category}>
-                  <TableCell className="border-b">{category}</TableCell>
+            {spoilageEntries.length > 0 ? (
+              spoilageEntries.map(({ item, amount, date }, index) => (
+                <TableRow key={index} className="hover:bg-gray-100">
+                  <TableCell className="border-b">{item}</TableCell>
                   <TableCell className="border-b">{amount}</TableCell>
+                  <TableCell className="border-b">{date}</TableCell>
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={2} className="text-center">
-                  No data available
+                <TableCell colSpan={3} className="text-center">
+                  No spoilage data available
                 </TableCell>
               </TableRow>
             )}
@@ -75,4 +72,4 @@ const PredictionsTable = async () => {
   }
 };
 
-export default PredictionsTable;
+export default SpoilageTable;

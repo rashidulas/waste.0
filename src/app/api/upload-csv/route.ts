@@ -20,12 +20,14 @@ const s3 = new S3Client({
 });
 
 // Function to upload CSV to S3
-async function uploadCSVToS3(filePath: string, userId: string) {
+async function uploadCSVToS3(filePath: string, userId: string, folder: string) {
   const fileContent = fs.readFileSync(filePath);
 
   const params = {
     Bucket: process.env.AWS_BUCKET_NAME!,
-    Key: `uploads/${userId}/${path.basename(filePath)}`,
+    Key: `uploads/${userId}/${folder}${folder ? "/" : ""}${path.basename(
+      filePath
+    )}`, // Ensure the correct path format
     Body: fileContent,
   };
 
@@ -36,7 +38,9 @@ async function uploadCSVToS3(filePath: string, userId: string) {
       success: true,
       location: `https://${process.env.AWS_BUCKET_NAME}.s3.${
         process.env.AWS_REGION
-      }.amazonaws.com/uploads/${userId}/${path.basename(filePath)}`,
+      }.amazonaws.com/uploads/${userId}/${folder}${
+        folder ? "/" : ""
+      }${path.basename(filePath)}`,
     };
   } catch (error) {
     console.error("Error uploading CSV to S3:", error);
@@ -99,7 +103,13 @@ export async function POST(request: NextRequest) {
     const buffer = await file.arrayBuffer();
     const filePath = path.join(process.cwd(), file.name);
     fs.writeFileSync(filePath, Buffer.from(buffer));
-    const s3UploadResult = await uploadCSVToS3(filePath, userId);
+
+    // Check if the file name contains the word "inventory"
+    const folder = file.name.toLowerCase().includes("inventory")
+      ? "inventory"
+      : ""; // Set folder name based on the presence of "inventory"
+
+    const s3UploadResult = await uploadCSVToS3(filePath, userId, folder);
     fs.unlinkSync(filePath);
 
     if (s3UploadResult.success) {

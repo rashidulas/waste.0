@@ -7,9 +7,10 @@ import Image from "next/image";
 import { BarChartComponent } from "@/components/charts/BarChart";
 import SurplusComponent from "@/components/dashboard/surplus"; // Add this line
 import PredictionsTable from "@/components/dashboard/PredictionsTable";
+import SpoilageTable from "@/components/dashboard/spoilageTable"; // Add this line
+import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 
 // Fetch user data and determine if the user is a charity
-
 async function fetchUserData(userEmail: string) {
   await connectToDB();
 
@@ -42,74 +43,51 @@ async function StreamlitAppWithSidebar() {
   const { userData, isCharity, allBusinesses } = await fetchUserData(userEmail);
 
   return (
-    <div className="flex h-screen w-full">
-      {/* Left Half: Sidebar and User/Business Info */}
-      <div className="w-1/5 bg-gray-800 text-white p-6 overflow-y-auto">
-        <h3 className="text-xl font-bold mb-4 border-b border-gray-700 pb-2">
-          User Information
-        </h3>
-        <div className="flex flex-col items-center">
-          {profileImageUrl ? (
-            <Image
-              src={profileImageUrl}
-              alt="User Profile Image"
-              width={80}
-              height={80}
-              className="rounded-full mb-4"
-            />
-          ) : (
-            <div className="w-20 h-20 bg-gray-600 rounded-full mb-4" />
-          )}
-          <p className="text-lg font-semibold">{user?.fullName || "No Name"}</p>
-          <p className="text-sm text-gray-400">{userEmail}</p>
+    <div className="flex flex-col min-h-screen">
+      {/* Header */}
+      <header className="shadow-sm px-8 py-4 flex justify-between items-center bg-white">
+        <div className="text-2xl font-bold text-black">Dashboard</div>
+        <div>
+          <SignedOut>
+            <SignInButton>
+              <button className="px-6 py-2 bg-orange-500 text-black rounded hover:bg-orange-600">
+                Sign In
+              </button>
+            </SignInButton>
+          </SignedOut>
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
         </div>
+      </header>
 
-        {/* Conditionally render business information if the user is a charity */}
-        {isCharity && (
-          <div className="mt-6">
-            <h4 className="text-lg font-semibold mb-2">Nearby Businesses</h4>
-            <div className="space-y-4">
-              {allBusinesses &&
-                allBusinesses.map((business: any) => (
-                  <div
-                    key={business._id}
-                    className="border border-gray-700 p-4 rounded-lg bg-gray-700"
-                  >
-                    <p>
-                      <strong>Username:</strong> {business.name}
-                    </p>
-                    <p>
-                      <strong>Email:</strong> {business.email}
-                    </p>
-                    <p>
-                      <strong>Phone Number:</strong> {business.phone || "N/A"}
-                    </p>
-                    {/* Format the address properly */}
-                    <p>
-                      <strong>Address:</strong>{" "}
-                      {`${business.address.street}, ${business.address.city}, ${business.address.state}, ${business.address.zipCode}` ||
-                        "N/A"}
-                    </p>
-                  </div>
-                ))}
-            </div>
+      {/* Content section */}
+      <div className="flex-1 w-full bg-gray-50 p-4">
+        {/* Flexbox to separate the components */}
+        <div className="flex justify-between space-x-4 mb-8">
+          {/* Left component */}
+          <div className="flex-1 bg-white rounded-lg shadow p-4">
+            <SurplusComponent />
           </div>
-        )}
-      </div>
 
-      {/* Right Half: Streamlit App */}
-      <div className="w-5/6">
-        {/* <iframe
-          src="http://localhost:8501" // Replace with your Streamlit app URL
-          className="w-full h-full border-none"
-          title="Streamlit App"
-        /> */}
-
-        <div>
-          <SurplusComponent />
+          {/* Right component */}
+          <div className="flex-1 max-w-lg bg-white rounded-lg shadow p-4">
+            <PredictionsTable />
+          </div>
         </div>
-        <div>
-          <PredictionsTable />
+
+        {/* Spoilage table */}
+        <div className="bg-white rounded-lg shadow p-4 max-w-lg mx-auto mb-8">
+          <SpoilageTable />
+        </div>
+
+        {/* Iframe - Positioned at the end, takes full width, but auto height */}
+        <div className="w-full">
+          <iframe
+            src="http://localhost:8501" // Replace with your Streamlit app URL
+            className="w-full h-[80vh] border-none" // 50vh height, or adjust as needed
+            title="Streamlit App"
+          />
         </div>
       </div>
     </div>
