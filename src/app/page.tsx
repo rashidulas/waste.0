@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import Link from "next/link";
+import CSVUploadForm from "@/components/forms/CSVUpload";
 import { buttonVariants } from "@/components/ui/button";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 
@@ -12,14 +13,13 @@ export default function Home() {
         <div className="text-2xl font-bold text-black">waste.0</div>
         <SignedOut>
           <SignInButton>
-            <button className="px-6 py-2 bg-orange-500 text-white rounded hover:bg-orange-600">
+            <button className="px-6 py-2 bg-[#f87315] text-white rounded hover:bg-orange-600">
               Sign In
             </button>
           </SignInButton>
         </SignedOut>
         <SignedIn>
           <UserButton />
-          <CSVUploadForm />
         </SignedIn>
       </header>
 
@@ -42,21 +42,30 @@ export default function Home() {
           <SignedOut>
             <SignInButton>
               <button
-                className="mt-5 py-3 px-6 bg-orange-400 text-white rounded-lg text-lg font-semibold shadow-lg hover:bg-orange-800 hover:shadow-orange-300 transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105 flex items-center justify-center"
+                className="mt-5 py-3 px-6 bg-[#f87315] text-white rounded-lg text-lg font-semibold shadow-lg hover:bg-orange-800 hover:shadow-orange-300 transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105 flex items-center justify-center"
               >
-                Sign In
+                Get Started
               </button>
             </SignInButton>
           </SignedOut>
+          
 
           {/* Button for logged-in users */}
           <SignedIn>
             <Link href="/dashboard" passHref>
-              <button
-                className="mt-5 py-3 px-6 bg-orange-400 text-white rounded-lg text-lg font-semibold shadow-lg hover:bg-orange-800 hover:shadow-orange-300 transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105 flex items-center justify-center"
+            
+            <div className="my-8">
+              <CSVUploadForm />
+            </div>
+            
+            <div className="w-full mx-auto">
+            <button
+                className="mx-auto mt-5 py-3 px-6 bg-[#f87315] text-white rounded-lg text-lg font-semibold shadow-lg hover:bg-orange-800 hover:shadow-orange-300 transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105 flex items-center justify-center"
               >
-                Get Started
+                Dashboard
               </button>
+            </div>
+              
             </Link>
           </SignedIn>
         </section>
@@ -76,7 +85,7 @@ export default function Home() {
           />
         </div>
 
-        <div className="mx-auto max-w-6xl lg:px-8">
+        <div className="mx-auto max-w-6xl lg:px-8 mb-20">
           <div className="mt-16 flow-root sm:mt-24">
             <h2 className="text-3xl font-bold flex flex-auto justify-center text-black">How it Works</h2>
 
