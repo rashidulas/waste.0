@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
 import { connectToDB } from "@/lib/mongoose";
 import Business from "@/lib/models/business.model";
@@ -21,7 +21,9 @@ export async function GET(req: Request) {
   const charity = await Charity.findOne({ email: userEmail }).lean(); // Use lean() for performance
 
   // Check if the user is onboarded
-  const isOnboarded = (business && business.onboarded) || (charity && charity.onboarded);
+  const isOnboarded =
+    (Array.isArray(business) ? false : business?.onboarded) ||
+    (Array.isArray(charity) ? false : charity?.onboarded);
 
   // Prepare the response data
   const userData = {

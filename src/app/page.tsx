@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import Link from "next/link";
+import CSVUploadForm from "@/components/forms/CSVUpload";
 
 export default function Home() {
   return (
@@ -17,6 +18,7 @@ export default function Home() {
         </SignedOut>
         <SignedIn>
           <UserButton />
+          <CSVUploadForm />
         </SignedIn>
       </header>
 
@@ -26,12 +28,17 @@ export default function Home() {
           Reduce Food Waste with <span className="text-orange-600">wase.0</span>
         </h1>
         <p className="text-lg text-gray-700 mt-6 max-w-2xl">
-          Connect your grocery shop inventory with our AI to predict daily orders and avoid surplus food waste. Notify charities about soon-to-expire food to donate before it gets wasted.
+          Connect your grocery shop inventory with our AI to predict daily
+          orders and avoid surplus food waste. Notify charities about
+          soon-to-expire food to donate before it gets wasted.
         </p>
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-16 bg-gradient-to-r from-orange-200 via-yellow-100 to-green-200 text-center">
+      <section
+        id="features"
+        className="py-16 bg-gradient-to-r from-orange-200 via-yellow-100 to-green-200 text-center"
+      >
         <h2 className="text-3xl font-bold text-green-800">How it Works</h2>
         <div className="mt-10 max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
           {/* Feature 1 */}
@@ -47,7 +54,8 @@ export default function Home() {
               AI-Powered Inventory Management
             </h3>
             <p className="text-gray-700 mt-2">
-              Our machine learning models analyze your grocery store's inventory to suggest optimized daily orders.
+              Our machine learning models analyze your grocery store's inventory
+              to suggest optimized daily orders.
             </p>
           </div>
 
@@ -64,7 +72,8 @@ export default function Home() {
               Expiration Alerts
             </h3>
             <p className="text-gray-700 mt-2">
-              Receive real-time alerts when items are nearing their expiration date so you can avoid waste by donating them.
+              Receive real-time alerts when items are nearing their expiration
+              date so you can avoid waste by donating them.
             </p>
           </div>
 
@@ -81,17 +90,25 @@ export default function Home() {
               Charity Connection
             </h3>
             <p className="text-gray-700 mt-2">
-              Automatically notify local charities to collect near-expiration food for donation, reducing waste and helping those in need.
+              Automatically notify local charities to collect near-expiration
+              food for donation, reducing waste and helping those in need.
             </p>
           </div>
         </div>
       </section>
 
       {/* About Section */}
-      <section id="about" className="py-16 bg-gradient-to-r from-orange-200 via-yellow-100 to-green-200 text-center">
+      <section
+        id="about"
+        className="py-16 bg-gradient-to-r from-orange-200 via-yellow-100 to-green-200 text-center"
+      >
         <h2 className="text-3xl font-bold text-green-800">About wase.0</h2>
         <p className="mt-6 max-w-4xl mx-auto text-lg text-gray-700">
-          wase.0 is dedicated to tackling the growing problem of food waste by connecting grocery stores with charities. By leveraging AI, our platform ensures grocery stores can optimize their daily orders to minimize excess and help charities receive food before it goes to waste.
+          wase.0 is dedicated to tackling the growing problem of food waste by
+          connecting grocery stores with charities. By leveraging AI, our
+          platform ensures grocery stores can optimize their daily orders to
+          minimize excess and help charities receive food before it goes to
+          waste.
         </p>
       </section>
 
@@ -100,7 +117,9 @@ export default function Home() {
         <div className="max-w-4xl mx-auto">
           <h4 className="text-xl font-semibold">Get in Touch</h4>
           <p className="mt-4 text-gray-300">contact@wase0.com</p>
-          <p className="mt-2 text-gray-300">123 Food Street, Save City, SC 12345</p>
+          <p className="mt-2 text-gray-300">
+            123 Food Street, Save City, SC 12345
+          </p>
         </div>
       </footer>
     </div>
