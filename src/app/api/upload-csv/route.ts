@@ -45,16 +45,16 @@ async function uploadCSVToS3(filePath: string, userId: string) {
 }
 
 // Function to trigger Databricks job
-async function triggerDatabricksJob(fileName: string) {
+async function triggerDatabricksJob(s3Paths: string[]) {
   const url = `https://dbc-f53a120f-3946.cloud.databricks.com/api/2.0/jobs/run-now`;
-  const jobId = "17018373764833";
+  const jobId = "17018373764833"; // replace with your actual job ID
 
   try {
     const response = await axios.post(
       url,
       {
         job_id: jobId,
-        notebook_params: { file_name: fileName },
+        notebook_params: { file_paths: s3Paths.join(",") }, // Pass multiple S3 paths as a comma-separated string
       },
       {
         headers: {
@@ -89,6 +89,7 @@ export async function POST(request: NextRequest) {
   }
 
   const uploadedFiles = [];
+  const s3Paths = []; // Array to collect S3 paths
 
   for (const file of files) {
     if (!(file instanceof File)) {
@@ -103,8 +104,7 @@ export async function POST(request: NextRequest) {
 
     if (s3UploadResult.success) {
       uploadedFiles.push(s3UploadResult.location);
-      // Trigger Databricks job after successful upload
-      await triggerDatabricksJob(file.name);
+      s3Paths.push(s3UploadResult.location); // Collect S3 paths
     } else {
       return NextResponse.json(
         { error: `Failed to upload file: ${file.name}` },
@@ -113,8 +113,13 @@ export async function POST(request: NextRequest) {
     }
   }
 
+  // Trigger Databricks job with multiple file paths
+  await triggerDatabricksJob(
+    s3Paths.filter((path): path is string => path !== undefined)
+  );
+
   return NextResponse.json({
-    message: "Files uploaded successfully!",
+    message: "Files uploaded and Databricks job triggered successfully!",
     urls: uploadedFiles,
   });
 }
