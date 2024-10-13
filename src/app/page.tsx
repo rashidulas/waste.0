@@ -30,37 +30,37 @@ export default function Home() {
           </p>
         </div>
         <h1 className="max-w-4xl text-5xl font-bold md:text-6xl lg:text-7xl">
-        Reduce Food Waste with <span className="text-orange-600">waste.0</span>
+          Reduce Food Waste with <span className="text-orange-600">waste.0</span>
         </h1>
 
         <p className="mt-5 max-w-prose text-zinc-700 sm:text-lg">
-        Connect your grocery shop inventory with our AI to predict daily orders and avoid surplus food waste. Notify charities about soon-to-expire food to donate before it gets wasted.
+          Connect your grocery shop inventory with our AI to predict daily orders and avoid surplus food waste. Notify charities about soon-to-expire food to donate before it gets wasted.
         </p>
 
-        <section >
-        {/* Button for logged-out users */}
-        <SignedOut>
-          <SignInButton>
-            <button
-              className="mt-5 py-3 px-6 bg-orange-400 text-white rounded-lg text-lg font-semibold shadow-lg hover:bg-orange-800 hover:shadow-orange-300 transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105 flex items-center justify-center"
-            >
-              Sign In
-            </button>
-          </SignInButton>
-        </SignedOut>
+        <section>
+          {/* Button for logged-out users */}
+          <SignedOut>
+            <SignInButton>
+              <button
+                className="mt-5 py-3 px-6 bg-orange-400 text-white rounded-lg text-lg font-semibold shadow-lg hover:bg-orange-800 hover:shadow-orange-300 transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105 flex items-center justify-center"
+              >
+                Sign In
+              </button>
+            </SignInButton>
+          </SignedOut>
 
-        {/* Button for logged-in users */}
-        <SignedIn>
-          <Link href="/dashboard" passHref>
-            <button
-              className="mt-5 py-3 px-6 bg-orange-400 text-white rounded-lg text-lg font-semibold shadow-lg hover:bg-orange-800 hover:shadow-orange-300 transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105 flex items-center justify-center"
-            >
-              Get Started
-            </button>
-          </Link>
-        </SignedIn>
-      </section>
-      </MaxWidthWrapper> 
+          {/* Button for logged-in users */}
+          <SignedIn>
+            <Link href="/dashboard" passHref>
+              <button
+                className="mt-5 py-3 px-6 bg-orange-400 text-white rounded-lg text-lg font-semibold shadow-lg hover:bg-orange-800 hover:shadow-orange-300 transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105 flex items-center justify-center"
+              >
+                Get Started
+              </button>
+            </Link>
+          </SignedIn>
+        </section>
+      </MaxWidthWrapper>
 
       <div className="relative isolate">
         <div
@@ -76,48 +76,38 @@ export default function Home() {
           />
         </div>
 
-        <div className="mx-auto max-w-6xl px-6 lg:px-8">
+        <div className="mx-auto max-w-6xl lg:px-8">
           <div className="mt-16 flow-root sm:mt-24">
-            <div className="-m-2 rounded-xl bg-gray-900/5 p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4">
             <h2 className="text-3xl font-bold flex flex-auto justify-center text-black">How it Works</h2>
-            <ol className="my-8 space-y-4 pt-8 md:flex md:space-x-12 md:space-y-0">
-          <li className="md:flex-1">
-            <div className="flex flex-col space-y-2 border-l-4 border-zinc-300 py-2 pl-4 md:border-l-0 md:border-t-2 md:pb-0 md:pl-0 md:pt-4">
-              <span className="text-sm font-medium text-blue-600">Step 1</span>
-              <span className="text-xl font-semibold">Sign up for LegalAI</span>
-              <span className="mt-2 text-zinc-700">
-                Sign up easily with{" "}
-                <span className="font-bold">PropelAuth</span> and start
-                analyzing your legal documents right away.
-              </span>
-            </div>
-          </li>
-          <li className="md:flex-1">
-            <div className="flex flex-col space-y-2 border-l-4 border-zinc-300 py-2 pl-4 md:border-l-0 md:border-t-2 md:pb-0 md:pl-0 md:pt-4">
-              <span className="text-sm font-medium text-blue-600">Step 2</span>
-              <span className="text-xl font-semibold">
-                Upload your PDF file
-              </span>
-              <span className="mt-2 text-zinc-700">
-                Simply drag and drop your document, and our AI will begin
-                analyzing it for risks, inconsistencies, and ambiguities.
-              </span>
-            </div>
-          </li>
-          <li className="md:flex-1">
-            <div className="flex flex-col space-y-2 border-l-4 border-zinc-300 py-2 pl-4 md:border-l-0 md:border-t-2 md:pb-0 md:pl-0 md:pt-4">
-              <span className="text-sm font-medium text-blue-600">Step 3</span>
-              <span className="text-xl font-semibold">
-                Review the AI's analysis
-              </span>
-              <span className="mt-2 text-zinc-700">
-                Receive detailed insights and recommendations, helping you
-                ensure compliance and accuracy. Save time and reduce legal risks
-                instantly.
-              </span>
-            </div>
-          </li>
-        </ol>
+
+            {/* Steps Section */}
+            <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-12">
+              {/* Step 1 */}
+              <div className="bg-white p-6 rounded-lg shadow-lg">
+                <span className="text-sm font-medium text-blue-600">Step 1</span>
+                <h3 className="text-xl font-semibold mt-4">AI-Powered Inventory Management</h3>
+                <p className="mt-2 text-gray-700">
+                Our machine learning models analyze your grocery store's inventory to suggest optimized daily orders.
+                </p>
+              </div>
+
+              {/* Step 2 */}
+              <div className="bg-white p-6 rounded-lg shadow-lg">
+                <span className="text-sm font-medium text-blue-600">Step 2</span>
+                <h3 className="text-xl font-semibold mt-4">Expiration Alerts</h3>
+                <p className="mt-2 text-gray-700">
+                Receive real-time alerts when items are nearing their expiration date so you can avoid waste by donating them.
+                </p>
+              </div>
+
+              {/* Step 3 */}
+              <div className="bg-white p-6 rounded-lg shadow-lg">
+                <span className="text-sm font-medium text-blue-600">Step 3</span>
+                <h3 className="text-xl font-semibold mt-4">Charity Connection</h3>
+                <p className="mt-2 text-gray-700">
+                Automatically notify local charities to collect near-expiration food for donation, reducing waste and helping those in need.
+                </p>
+              </div>
             </div>
           </div>
         </div>
